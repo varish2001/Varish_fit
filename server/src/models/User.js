@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, enum: ["male", "female", "other"], required: true },
     fitnessGoal: {
       type: String,
-      enum: ["fat_loss", "muscle_gain", "maintenance", "strength"],
+      enum: ["fat_loss", "muscle_gain", "maintenance", "strength", "endurance", "beginner_fitness"],
       required: true
     },
     experienceLevel: {
@@ -27,6 +27,13 @@ const userSchema = new mongoose.Schema(
       enum: ["veg", "non_veg"],
       default: "veg"
     },
+    workoutDaysPerWeek: { type: Number, min: 3, max: 6 },
+    equipmentPreference: {
+      type: String,
+      enum: ["home", "gym"],
+      default: "gym"
+    },
+    injuriesLimitations: { type: String, default: "" },
     dailyWaterTargetMl: { type: Number, default: 2500 },
     dailyCalorieTarget: { type: Number, default: 2200 }
   },

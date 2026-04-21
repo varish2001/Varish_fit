@@ -4,7 +4,7 @@ import userRoutes from "./routes/userRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import trackingRoutes from "./routes/trackingRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import { createDietPlan } from "./controllers/planController.js";
+import { createDietPlan, createWorkoutPlan } from "./controllers/planController.js";
 import { protect } from "./middleware/auth.js";
 
 export const app = express();
@@ -30,6 +30,7 @@ app.use(express.json());
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
 app.post("/api/diet-plan", protect, createDietPlan);
+app.post("/api/workout-plan", protect, createWorkoutPlan);
 app.use("/api/users", userRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/tracking", trackingRoutes);

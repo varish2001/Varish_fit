@@ -1,42 +1,6 @@
 import OpenAI from "openai";
 import { buildDietPlan, normalizeDietProfile, shapeDietPlanResponse } from "./dietPlanService.js";
-
-const exerciseLibrary = {
-  Chest: ["Push-Ups", "Dumbbell Bench Press", "Incline Press"],
-  Back: ["Lat Pulldown", "Seated Row", "Deadlift"],
-  Legs: ["Squat", "Leg Press", "Romanian Deadlift"],
-  Shoulders: ["Overhead Press", "Lateral Raise", "Rear Delt Fly"],
-  Arms: ["Bicep Curl", "Tricep Pushdown", "Hammer Curl"],
-  Core: ["Plank", "Hanging Knee Raise", "Russian Twist"]
-};
-
-const repsByLevel = {
-  beginner: { sets: 3, reps: "10-12" },
-  intermediate: { sets: 4, reps: "8-12" },
-  advanced: { sets: 5, reps: "6-10" }
-};
-
-const splitTemplates = {
-  beginner: ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"],
-  intermediate: ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"],
-  advanced: ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"]
-};
-
-export const buildWorkoutPlan = (user) => {
-  const split = splitTemplates[user.experienceLevel] || splitTemplates.beginner;
-  const volume = repsByLevel[user.experienceLevel] || repsByLevel.beginner;
-  return split.map((muscle, index) => ({
-    day: `Day ${index + 1}`,
-    muscleGroup: muscle,
-    exercises: (exerciseLibrary[muscle] || []).map((name) => ({
-      name,
-      sets: volume.sets,
-      reps: volume.reps,
-      notes: `Controlled tempo. Focus on form for ${name}.`,
-      imageUrl: "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg"
-    }))
-  }));
-};
+import { buildWorkoutPlan } from "./workoutPlanService.js";
 
 const openaiClient =
   process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== "your_openai_api_key"
@@ -55,24 +19,6 @@ const toString = (value, fallback = "") => (typeof value === "string" && value.t
 const toNumber = (value, fallback = 0) => {
   const num = Number(value);
   return Number.isFinite(num) ? num : fallback;
-};
-
-const normalizeWorkout = (rawWorkout, fallbackWorkout) => {
-  if (!Array.isArray(rawWorkout) || rawWorkout.length === 0) return fallbackWorkout;
-  return rawWorkout.slice(0, 7).map((day, index) => ({
-    day: toString(day?.day, `Day ${index + 1}`),
-    muscleGroup: toString(day?.muscleGroup, "Full Body"),
-    exercises: Array.isArray(day?.exercises) && day.exercises.length
-      ? day.exercises.slice(0, 8).map((ex) => ({
-          name: toString(ex?.name, "Exercise"),
-          sets: Math.max(1, toNumber(ex?.sets, 3)),
-          reps: toString(ex?.reps, "10-12"),
-          notes: toString(ex?.notes, "Use controlled movement and correct form."),
-          imageUrl:
-            toString(ex?.imageUrl) || "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg"
-        }))
-      : fallbackWorkout[index % fallbackWorkout.length]?.exercises || []
-  }));
 };
 
 const normalizeDiet = (rawDiet, fallbackDiet, user) => {
@@ -246,9 +192,8 @@ export const generatePersonalizedPlans = async (user) => {
 
     const content = response.choices?.[0]?.message?.content || "{}";
     const parsed = safeJsonParse(content) || {};
-    const workout = normalizeWorkout(parsed.workoutPlan, fallbackWorkout);
     const diet = normalizeDiet(parsed.dietPlan, fallbackDiet, user);
-    return { workout, diet, source: "ai" };
+    return { workout: fallbackWorkout, diet, source: "hybrid_ai_diet" };
   } catch (error) {
     console.warn("AI recommendation failed, falling back to rule-based plans:", error.message);
     return { workout: fallbackWorkout, diet: fallbackDiet, source: "rule_based_fallback" };

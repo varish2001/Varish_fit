@@ -12,7 +12,10 @@ const defaultForm = {
   fitnessGoal: "fat_loss",
   experienceLevel: "beginner",
   activityLevel: "moderate",
-  dietPreference: "veg"
+  dietPreference: "veg",
+  workoutDaysPerWeek: 3,
+  equipmentPreference: "gym",
+  injuriesLimitations: ""
 };
 
 export default function OnboardingPage() {
@@ -33,7 +36,8 @@ export default function OnboardingPage() {
         ...form,
         age: Number(form.age),
         heightCm: Number(form.heightCm),
-        weightKg: Number(form.weightKg)
+        weightKg: Number(form.weightKg),
+        workoutDaysPerWeek: Number(form.workoutDaysPerWeek)
       });
       completeOnboarding(data);
       navigate("/dashboard");
@@ -76,7 +80,9 @@ export default function OnboardingPage() {
               ["fat_loss", "Fat Loss"],
               ["muscle_gain", "Muscle Gain"],
               ["maintenance", "Maintenance"],
-              ["strength", "Strength"]
+              ["strength", "Strength"],
+              ["endurance", "Endurance"],
+              ["beginner_fitness", "Beginner Fitness"]
             ]}
           />
           <Select
@@ -110,6 +116,35 @@ export default function OnboardingPage() {
               ]}
             />
           </div>
+          <Select
+            label="Workout Days / Week"
+            value={form.workoutDaysPerWeek}
+            onChange={(v) => onChange("workoutDaysPerWeek", v)}
+            options={[
+              [3, "3 Days"],
+              [4, "4 Days"],
+              [5, "5 Days"],
+              [6, "6 Days"]
+            ]}
+          />
+          <Select
+            label="Training Preference"
+            value={form.equipmentPreference}
+            onChange={(v) => onChange("equipmentPreference", v)}
+            options={[
+              ["gym", "Gym"],
+              ["home", "Home"]
+            ]}
+          />
+          <label className="md:col-span-2 flex flex-col gap-1 text-sm font-medium text-slate">
+            Injuries or Limitations (optional)
+            <textarea
+              value={form.injuriesLimitations}
+              onChange={(e) => onChange("injuriesLimitations", e.target.value)}
+              className="min-h-24 rounded-xl border border-slate/20 bg-white px-3 py-2 outline-none ring-coral focus:ring-2"
+              placeholder="Example: knee pain, shoulder limitation, lower back sensitivity"
+            />
+          </label>
 
           {error && <p className="md:col-span-2 text-sm text-red-600">{error}</p>}
           <button

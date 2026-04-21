@@ -15,7 +15,20 @@ const signToken = (userId) =>
 
 export const getStarted = async (req, res) => {
   try {
-    const { age, heightCm, weightKg, gender, fitnessGoal, experienceLevel, activityLevel, dietPreference, name } = req.body;
+    const {
+      age,
+      heightCm,
+      weightKg,
+      gender,
+      fitnessGoal,
+      experienceLevel,
+      activityLevel,
+      dietPreference,
+      name,
+      workoutDaysPerWeek,
+      equipmentPreference,
+      injuriesLimitations
+    } = req.body;
     const payload = {
       name,
       age,
@@ -25,7 +38,10 @@ export const getStarted = async (req, res) => {
       fitnessGoal,
       experienceLevel,
       activityLevel,
-      dietPreference
+      dietPreference,
+      workoutDaysPerWeek,
+      equipmentPreference,
+      injuriesLimitations
     };
     const user = runtimeState.dbConnected ? await User.create(payload) : memoryStore.createUser(payload);
 

@@ -19,6 +19,13 @@ export const memoryStore = {
   getUserById(userId) {
     return users.get(String(userId)) || null;
   },
+  updateUser(userId, patch) {
+    const prev = users.get(String(userId));
+    if (!prev) return null;
+    const next = { ...prev, ...patch, updatedAt: new Date() };
+    users.set(String(userId), next);
+    return next;
+  },
   upsertWorkout(userId, payload) {
     const plan = { _id: id(), userId: String(userId), ...payload, updatedAt: new Date() };
     workouts.set(String(userId), plan);

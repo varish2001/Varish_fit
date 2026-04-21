@@ -33,11 +33,12 @@ export default function DashboardPage() {
   };
 
   const hydrationTarget = diet?.hydration ?? diet?.hydrationMl;
+  const workoutDays = workout?.weeklyPlan?.length ?? workout?.weeklySchedule?.length;
 
   const cards = [
     { label: "Daily Calories", value: diet?.calories || "-", icon: Flame },
     { label: "Hydration Target", value: `${hydrationTarget ?? "-"} ml`, icon: Droplets },
-    { label: "Workout Days", value: workout?.weeklySchedule?.length || "-", icon: Target },
+    { label: "Workout Days", value: workoutDays || "-", icon: Target },
     { label: "Latest Weight", value: latest?.weightKg ? `${latest.weightKg} kg` : "-", icon: Weight }
   ];
 
